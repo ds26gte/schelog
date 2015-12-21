@@ -1,13 +1,15 @@
+= Schelog
+
 Schelog is for you if you are interested in any or all
 of the following: Scheme, Prolog, logic, logic
 programming, AI, and expert systems.
 
 Schelog is an embedding of logic programming a la
-Prolog in Scheme.  "Embedding" means you don't lose
+Prolog in Scheme.  “Embedding” means you don’t lose
 Scheme: You can use Prolog-style and conventional
 Scheme code fragments alongside each other.  Schelog
 contains the full repertoire of Prolog features,
-including meta-logical and second-order ("set")
+including meta-logical and second-order (“set”)
 predicates, leaving out only those features that could
 be more easily and more efficiently done with Scheme
 subexpressions.  The Schelog distribution includes
@@ -19,14 +21,10 @@ Scheme dialects:
 Bigloo, Gambit, Guile, MIT Scheme, MzScheme, Petite
 Chez Scheme, Pocket Scheme, SCM, and STk.
 
-                          ...
+❧
 
-Installation instructions are at 
+Installation instructions are at link:INSTALL.adoc[].
 
-  https://github.com/ds26gte/schelog/blob/master/INSTALL
+❧
 
-                          ...
-
-Documentation:
-
-  http://ds26gte.github.io/schelog/index.html
+Documentation: http://ds26gte.github.io/schelog/index.html

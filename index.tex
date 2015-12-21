@@ -1,13 +1,16 @@
 \magnification\magstephalf
 
+% Last modified 2018-06-09
+
 \input tex2page
+\input plainsection
 \input btxmac
 \texonly
 %\input 2col
 
 \sidemargin 1.75 true in
 
-%\input defun
+\input defun
 
 % avoiding overfull boxes, without making
 % paragraphs too bad
@@ -53,7 +56,7 @@
 
 \endtexonly
 
-\htmlonly
+\ifx\shipout\UnDeFiNeD
 \def\defun#1#2{%
 \evalh{(do-end-para)}%
 \rawhtml<table bgcolor="#e5e5e5"  width=90% cellpadding=0 cellspacing=0><tr ><td align=left>\endrawhtml
@@ -65,7 +68,7 @@
 \def\t{()\rawhtml<sup><small>true</small></sup>\endrawhtml}
 \def\y{{\tt =>}}
 
-\endhtmlonly
+\fi
 
 \let\byline\centerline
 
@@ -74,6 +77,10 @@
 \def\defmac{\defun{[{\it macro}]}}
 \def\defgoal{\defun{[{\it goal}]}}
 \def\defflag{\defun{[{\it flag}]}}
+
+\ifx\shipout\UnDeFiNeD\else
+\let\htmlpagebreak\relax
+\fi
 
 \def\newsection{\htmlpagebreak\section}
 
@@ -1200,7 +1207,7 @@ the predicate \q{%not} is defined as follows:
 
 \sverbatim{
 (define %not
-  (%rel ()
+  (%rel (g)
     [(g) g ! %fail]
     [(g) %true]))
 }

@@ -1,8 +1,7 @@
-;MzScheme version of
 ;Schelog
 ;An embedding of Prolog in Scheme
 ;Dorai Sitaram
-;last modified 2015-06-02
+;last modified 2018-06-09
 
 ;logic variables and their manipulation
 
@@ -105,55 +104,72 @@
 (define schelog:unify
   (lambda (t1 t2)
     (lambda (fk)
-      (letrec
-        ((cleanup-n-fail
-           (lambda (s)
-             (for-each schelog:unbind-ref! s)
-             (fk 'fail)))
-         (unify1
-           (lambda (t1 t2 s)
-             ;(printf "unify1 ~s ~s~%" t1 t2)
-             (cond ((eqv? t1 t2) s)
-                   ((schelog:ref? t1)
-                    (cond ((schelog:unbound-ref? t1)
-                           (cond ((schelog:occurs-in? t1 t2)
-                                  (cleanup-n-fail s))
-                                 (else
-                                   (schelog:set-ref! t1 t2)
-                                   (cons t1 s))))
-                          ((schelog:frozen-ref? t1)
-                           (cond ((schelog:ref? t2)
-                                  (cond ((schelog:unbound-ref? t2)
-                                         ;(printf "t2 is unbound~%")
-                                         (unify1 t2 t1 s))
-                                        ((schelog:frozen-ref? t2)
-                                         (cleanup-n-fail s))
-                                        (else
-                                          (unify1 t1 (schelog:deref t2) s))))
-                                 (else (cleanup-n-fail s))))
-                          (else
-                            ;(printf "derefing t1~%")
-                            (unify1 (schelog:deref t1) t2 s))))
-                   ((schelog:ref? t2) (unify1 t2 t1 s))
-                   ((and (pair? t1) (pair? t2))
-                    (unify1 (cdr t1) (cdr t2)
-                            (unify1 (car t1) (car t2) s)))
-                   ((and (string? t1) (string? t2))
-                    (if (string=? t1 t2) s
-                        (cleanup-n-fail s)))
-                   ((and (vector? t1) (vector? t2))
-                    (unify1 (vector->list t1)
-                            (vector->list t2) s))
-                   (else
-                     (for-each schelog:unbind-ref! s)
-                     (fk 'fail))))))
-        (let ((s (unify1 t1 t2 '())))
-          (lambda (d)
-            (cleanup-n-fail s)))))))
+      (let ((unwind-trail
+              (lambda (s)
+                (for-each schelog:unbind-ref! s)
+                (fk 'unwind-trail)))
+            (cleanup-n-fail
+              (lambda (s)
+                (for-each schelog:unbind-ref! s)
+                (fk 'fail))))
+        (letrec ((unify1
+                   (lambda (t1 t2 s)
+                     ;(printf "unify1 ~s ~s~%" t1 t2)
+                     (cond ((eqv? t1 t2) s)
+                           ((schelog:ref? t1)
+                            (cond ((schelog:unbound-ref? t1)
+                                   (cond ((schelog:occurs-in? t1 t2)
+                                          (cleanup-n-fail s))
+                                         (else
+                                           (schelog:set-ref! t1 t2)
+                                           (cons t1 s))))
+                                  ((schelog:frozen-ref? t1)
+                                   (cond ((schelog:ref? t2)
+                                          (cond ((schelog:unbound-ref? t2)
+                                                 ;(printf "t2 is unbound~%")
+                                                 (unify1 t2 t1 s))
+                                                ((schelog:frozen-ref? t2)
+                                                 (cleanup-n-fail s))
+                                                (else
+                                                  (unify1 t1 (schelog:deref t2) s))))
+                                         (else (cleanup-n-fail s))))
+                                  (else
+                                    ;(printf "derefing t1~%")
+                                    (unify1 (schelog:deref t1) t2 s))))
+                           ((schelog:ref? t2) (unify1 t2 t1 s))
+                           ((and (pair? t1) (pair? t2))
+                            (unify1 (cdr t1) (cdr t2)
+                                    (unify1 (car t1) (car t2) s)))
+                           ((and (string? t1) (string? t2))
+                            (if (string=? t1 t2) s
+                              (cleanup-n-fail s)))
+                           ((and (vector? t1) (vector? t2))
+                            (unify1 (vector->list t1)
+                                    (vector->list t2) s))
+                           (else
+                             (cleanup-n-fail s))))))
+          (let ((s (unify1 t1 t2 '())))
+            (lambda (msg)
+              ((if (eq? msg 'unwind-trail)
+                   unwind-trail
+                 cleanup-n-fail) s))))))))
 
 (define %= schelog:unify)
 
 ;disjunction
+
+(define schelog:make-failure-continuation
+  (lambda (fk)
+    (lambda (msg)
+      (if (not (eq? msg 'unwind-trail))
+          (fk 'fail)
+        #f))))
+
+(define schelog:call-with-failure-continuation
+  (lambda (f)
+    (call-with-current-continuation
+      (lambda (fk)
+        (f (schelog:make-failure-continuation fk))))))
 
 (define-syntax %or
   (lambda (so)
@@ -164,7 +180,7 @@
            (call-with-current-continuation
              (lambda (__sk)
                ,@(map (lambda (g)
-                        `(call-with-current-continuation
+                        `(schelog:call-with-failure-continuation
                            (lambda (__fk)
                              (__sk ((schelog:deref* ,g) __fk)))))
                       gg)
@@ -189,7 +205,7 @@
       (let* ((so-d (syntax->datum so))
              (g (cadr so-d)))
         `(lambda (__fk)
-           (let ((! (lambda (__fk2) __fk)))
+           (let ((! (lambda (__fk2) (__fk2 'unwind-trail) __fk)))
              ((schelog:deref* ,g) __fk)))))))
 
 ;Prolog-like sugar
@@ -204,10 +220,10 @@
            (lambda (__fk)
              (call-with-current-continuation
                (lambda (__sk)
-                 (let ((! (lambda (fk1) __fk)))
+                 (let ((! (lambda (fk1) (fk1 'unwind-trail) __fk)))
                    (%let ,vv
                          ,@(map (lambda (c)
-                                  `(call-with-current-continuation
+                                  `(schelog:call-with-failure-continuation
                                      (lambda (__fk)
                                        (let* ((__fk ((%= __fmls (list ,@(car c)))
                                                      __fk))
@@ -323,9 +339,10 @@
   (lambda (p)
     (lambda args
       (lambda (fk)
-	(if (call-with-current-continuation
+	(if (schelog:call-with-failure-continuation
 	      (lambda (k)
-		((apply p args) (lambda (d) (k #f)))))
+		((apply p args)
+                 (schelog:make-failure-continuation (lambda (d) (k #f))))))
 	    (fk 'fail)
 	    fk)))))
 
@@ -463,11 +480,9 @@
 
 (define %not
   (lambda (g)
-    (lambda (fk)
-      (if (call-with-current-continuation
-	    (lambda (k)
-	      ((schelog:deref* g) (lambda (d) (k #f)))))
-	  (fk 'fail) fk))))
+    (%cut-delimiter
+      (%or (%and g ! %fail)
+           %true))))
 
 ;assert, asserta
 
@@ -540,9 +555,10 @@
           (let ((lv2 (cons fvv lv)))
             (let* ((acc '())
                     (fk-final
+                     (schelog:make-failure-continuation
                       (lambda (d)
                         ;;(set! acc (reverse! acc))
-                        (sk ((schelog:separate-bags fvv bag acc) fk))))
+                        (sk ((schelog:separate-bags fvv bag acc) fk)))))
                     (fk-retry (goal fk-final)))
               (set! acc (kons (schelog:deref* lv2) acc))
               (fk-retry 'retry))))))))
@@ -605,9 +621,10 @@
                    (set! schelog:*more-k* __qk)
                    (set! schelog:*more-fk*
                      ((schelog:deref* ,g)
+                      (schelog:make-failure-continuation
                       (lambda (d)
                         (set! schelog:*more-fk* #f)
-                        (schelog:*more-k* #f))))
+                        (schelog:*more-k* #f)))))
                    (schelog:*more-k*
                      (map (lambda (nam val) (list nam (schelog:deref* val)))
                           ',vv

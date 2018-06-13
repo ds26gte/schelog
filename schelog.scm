@@ -339,7 +339,7 @@
   (lambda (p)
     (lambda args
       (lambda (fk)
-	(if (schelog:call-with-failure-continuation
+	(if (call-with-current-continuation
 	      (lambda (k)
 		((apply p args)
                  (schelog:make-failure-continuation (lambda (d) (k #f))))))

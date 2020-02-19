@@ -1,16 +1,17 @@
 \magnification\magstephalf
 
-% Last modified 2018-06-09
+% Last modified 2020-02-19
 
 \input tex2page
+\input tgtermes
 \input plainsection
 \input btxmac
+\input defun
 \texonly
 %\input 2col
 
 \sidemargin 1.75 true in
 
-\input defun
 
 % avoiding overfull boxes, without making
 % paragraphs too bad
@@ -37,7 +38,7 @@
 
 \def\p{\let\verbatimhook\relax\origverb}
 
-%sign for ``evaluates to''
+%sign for “evaluates to”
 \def\y{$\Rightarrow$}
 
 %notation for true nil
@@ -51,7 +52,9 @@
 
 \let\ab\allowbreak
 
-%that's all
+\font\tentt cmtt10
+
+%that’s all
 %\input ptm
 
 \endtexonly
@@ -104,17 +107,17 @@ Sitaram}}
 \byline{\urlh{https://github.com/ds26gte/schelog}{\htmlonly Download
 \endhtmlonly Version \input ./schelog-version }}
 \htmlonly
-\byline{\urlh{INSTALL}{Installation instructions}}
+\byline{\urlh{https://github.com/ds26gte/schelog/blob/master/INSTALL.adoc}{Installation instructions}}
 \endhtmlonly
 
 \bigskip
 
 \n Schelog is an {\em embedding} of
-Prolog-style logic programming in Scheme.  ``Embedding''
-means you don't lose Scheme: You can use Prolog-style and
+Prolog-style logic programming in Scheme.  “Embedding”
+means you don’t lose Scheme: You can use Prolog-style and
 conventional Scheme code fragments alongside each other.
 Schelog contains the full repertoire of Prolog features,
-including meta-logical and second-order (``set'')
+including meta-logical and second-order (“set”)
 predicates, leaving out only those features that could more
 easily and more efficiently be done with Scheme
 subexpressions.
@@ -130,7 +133,7 @@ continuations of Scheme as provided by the operator
 \q{call-with-current-continuation} (aka \q{call/cc}).  This
 allows Schelog to be an {\em embedding}, ie, logic
 programming is not built as a new language on top of Scheme,
-but is used alongside Scheme's other features.  Both styles
+but is used alongside Scheme’s other features.  Both styles
 of programming may be mixed to any extent that a project
 needs.
 
@@ -205,7 +208,7 @@ we will see \q{%which}es
 with other lists as the second subform.
 
 Note 2: The distinction between successful and failing goals
-depends on Scheme's distinguishing \q{#f} from
+depends on Scheme’s distinguishing \q{#f} from
 \q{()}.  We will see later (sec \ref{false-vs-nil})
 what to do in Scheme dialects where \q{#f} and \q{()} are
 identical.  For the moment, we will use the annotation
@@ -233,7 +236,7 @@ kind of Schelog object called a {\em predicate} (or
 Schelog objects.  Schelog comes with some primitive
 predicates, such as the arithmetic operators
 \q{%=:=} and \q{%<},
-standing for arithmetic ``equal'' and ``less than''
+standing for arithmetic “equal” and “less than”
 respectively.  For example, the following are some goals
 involving these predicates:
 
@@ -245,10 +248,10 @@ involving these predicates:
 }
 
 \n Other arithmetic predicates are
-\q{%>} (``greater than''),
-\q{%<=} (``less than or equal''),
-\q{%>=} (``greater than or equal''), and
-\q{%=/=} (``not equal'').
+\q{%>} (“greater than”),
+\q{%<=} (“less than or equal”),
+\q{%>=} (“greater than or equal”), and
+\q{%=/=} (“not equal”).
 
 Schelog predicates are not to be confused with conventional
 Scheme predicates (such as \q{<} and \q{=}).  Schelog
@@ -256,15 +259,15 @@ predicates, when applied to arguments, produce goals
 that
 may either succeed or fail.  Scheme predicates, when applied
 to arguments, yield a boolean value.  Henceforth, we will
-use the term ``predicate'' to mean Schelog predicates.
-Conventional predicates will be explicitly called ``Scheme
-predicates''.
+use the term “predicate” to mean Schelog predicates.
+Conventional predicates will be explicitly called “Scheme
+predicates”.
 
 \subsection{Predicates Introducing Facts}
 \label{facts}
 
 Users can create their own predicates using the Schelog form
-\q{%rel}.  For example, let's
+\q{%rel}.  For example, let’s
 define the predicate \q{%knows}:
 
 \sverbatim{
@@ -364,10 +367,10 @@ the goal to succeed.  For instance, the query:
 
 \n asks for an instantiation of the logic variable \q{what}
 that satisfies the goal \q{(%knows 'Odysseus what)}.
-In other words, we are asking, ``What does Odysseus know?''
+In other words, we are asking, “What does Odysseus know?”
 
-Note that this use of \q{%which} --- like \q{%rel}
-in the definition of \q{%computer-literate} ---
+Note that this use of \q{%which} — like \q{%rel}
+in the definition of \q{%computer-literate} —
 uses a local logic
 variable, \q{what}.  In general, the second subform of
 \q{%which} can be a list of local logic variables.  The
@@ -382,7 +385,7 @@ second subform.  Thus,
 }
 
 \n But that is not all that wily Odysseus knows.  Schelog
-provides a zero-argument procedure (``thunk'') called
+provides a zero-argument procedure (“thunk”) called
 \q{%more}
 that {\em retries} the goal in the last
 \q{%which}-query for a different solution.
@@ -414,7 +417,7 @@ list of bindings
 for true
 goals: the list is empty when there are no variables.
 
-For such Schemes as don't distinguish between \q{()} and
+For such Schemes as don’t distinguish between \q{()} and
 \q{#f}, we can still ask fruitful yes/no queries.  Simply
 use a dummy local
 variable in the
@@ -519,7 +522,7 @@ introduces.  Thus, this query emits \q{|t} five times before
 The arguments of Schelog predicates can be any Scheme
 objects.  In particular, composite structures such as lists,
 vectors and strings can be used, as also Scheme expressions
-using the full array of Scheme's construction and
+using the full array of Scheme’s construction and
 decomposition operators.  For instance, consider the
 following goal:
 
@@ -557,7 +560,7 @@ a \q{%member} goal.
 
 Note that the variable \q{y} in the definition of
 \q{%member} occurs only once in the second clause.  As such,
-it doesn't need you to make the effort of naming it.  (Names
+it doesn’t need you to make the effort of naming it.  (Names
 help only in matching a second occurrence to a first.)  Schelog
 lets you use the expression \q{(_)} to denote an anonymous
 variable.  (Ie, \q{_} is a thunk that generates a fresh
@@ -575,9 +578,9 @@ rewritten as
 \subsection{Constructors}
 \label{constructors}
 
-We can use constructors --- Scheme procedures for creating
-structures --- to simulate data types in Schelog.  For
-instance, let's define a natural-number data-type where
+We can use constructors — Scheme procedures for creating
+structures — to simulate data types in Schelog.  For
+instance, let’s define a natural-number data-type where
 \q{0} denotes zero, and \q{(succ x)} denotes the natural number
 whose immediate predecessor is \q{x}.   The constructor
 \q{succ} can
@@ -624,7 +627,7 @@ instance, the factorial predicate looks like:
 The above is a very inefficient way to do arithmetic,
 especially when the underlying language Scheme offers
 excellent arithmetic facilities (including a comprehensive
-number ``tower'' and exact rational arithmetic).  One
+number “tower” and exact rational arithmetic).  One
 problem with using Scheme calculations directly in Schelog
 clauses is that the expressions used may contain logic
 variables that need to be dereferenced.  Schelog provides
@@ -656,7 +659,7 @@ more efficient \q{%factorial} predicate:
 use \q{%factorial} only with its first argument already
 instantiated.  In many cases, this is not an unreasonable
 constraint.  In fact, given this limitation, there is
-nothing to prevent us from using Scheme's factorial
+nothing to prevent us from using Scheme’s factorial
 directly:
 
 \sverbatim{
@@ -667,7 +670,7 @@ directly:
 	      x))]))
 }
 
-\n or better yet, ``in-line'' any calls to \q{%factorial} with
+\n or better yet, “in-line” any calls to \q{%factorial} with
 \q{%is}-expressions calling \q{scheme-factorial}, where the
 latter is defined in the usual manner:
 
@@ -682,7 +685,7 @@ latter is defined in the usual manner:
 \subsection{Lexical Scoping}
 \label{lexical-scoping}
 
-One can use Scheme's lexical scoping to enhance predicate
+One can use Scheme’s lexical scoping to enhance predicate
 definition.  Here is a list-reversal predicate defined using
 a hidden auxiliary predicate:
 
@@ -761,15 +764,15 @@ is:
 G0 = (%computer-literate Penelope)
 }
 
-\n (I've taken out the quote because \q{Penelope} is the result
+\n (I’ve taken out the quote because \q{Penelope} is the result
 of evaluating \q{'Penelope}.)
 
 Schelog tries to match this with the head of the first
 clause of \q{%computer-literate}.  It succeeds, generating a
 binding  \q{[person Penelope]}.
 
-But this means it now has two new goals --- {\em subgoals}
---- to solve.  These are the goals in the body of the
+But this means it now has two new goals — {\em subgoals}
+— to solve.  These are the goals in the body of the
 matching clause, with the logic variables substituted by
 their instantiations:
 
@@ -780,8 +783,8 @@ G2 = (%knows Penelope Scheme)
 
 \n For \q{G1}, Schelog attempts matches with the clauses of
 \q{%knows}, and succeeds at the fifth try.  (There are no
-subgoals in this case, because the bodies of these ``fact''
-clauses are empty, in contrast to the ``rule'' clauses of
+subgoals in this case, because the bodies of these “fact”
+clauses are empty, in contrast to the “rule” clauses of
 \q{%computer-literate}.)
 Schelog then tries to solve \q{G2} against the clauses of
 \q{%knows}, and since there is no clause stating that
@@ -809,7 +812,7 @@ G4 = (%knows Penelope Prolog)
 }
 
 \n It is now easy to trace that Schelog finds both \q{G3} and \q{G4} to be
-true.  Since both of \q{G0}'s subgoals are true, \q{G0} is
+true.  Since both of \q{G0}’s subgoals are true, \q{G0} is
 itself considered true.  And this is what Schelog reports.  The
 interested reader can now trace  why the
 following query has a different denouement:
@@ -881,18 +884,18 @@ unify with.
 
 A robust unification algorithm uses the {\em
 occurs check}, which ensures that a logic variable
-isn't bound to a structure that contains itself.  
+isn’t bound to a structure that contains itself.
 Not performing the check can cause the unification
 to go into an infinite loop in some cases.  On the
 other hand, performing the occurs check greatly
 increases the time taken by unification, even in cases
-that wouldn't require the check.
+that wouldn’t require the check.
 
 Schelog uses the global variable
 \q{*schelog-use-occurs-check?*} to decide whether to
-use the occurs check.  By default, this variable is 
+use the occurs check.  By default, this variable is
 \q{#f}, ie, Schelog disables the occurs check.  To
-enable the check, 
+enable the check,
 
 \q{
 (set! *schelog-use-occurs-check?* #t)
@@ -1018,7 +1021,7 @@ The goal
 
 \n succeeds if \q{X} and \q{Y} are {\em identical} objects.  This
 is not quite the unification predicate \q{%=}, for \q{%==}
-doesn't touch unbound objects the way \q{%=} does.  Eg,
+doesn’t touch unbound objects the way \q{%=} does.  Eg,
 \q{%==} will not equate an unbound logic variable with a
 bound one, nor will it equate two unbound logic variables
 unless they are the {\em same} variable.
@@ -1031,7 +1034,7 @@ The goal
 (%var X)
 }
 
-\n succeeds if \q{X} isn't completely bound --- ie, it has at
+\n succeeds if \q{X} isn’t completely bound — ie, it has at
 least one unbound logic variable in its innards.
 
 The predicate \q{%nonvar} is the negation of \q{%var}.
@@ -1161,7 +1164,7 @@ are the conditional and negation.
 \subsection{Conditional Goals}
 \label{if-then-else}
 
-An ``if ... then ... else ...'' predicate can be defined
+An “if ... then ... else ...” predicate can be defined
 as follows
 
 \sverbatim{
@@ -1192,8 +1195,8 @@ to \q{Gelse}, and so \q{Gelse} is tried, as expected.
 
 Case 2: If \q{Gbool} succeeds, the cut commits to this
 clause of the \q{%if-then-else}.  We now try \q{Gthen}.  If
-\q{Gthen} should now fail --- or even if we simply retry for
-more solutions --- we are guaranteed that the second
+\q{Gthen} should now fail — or even if we simply retry for
+more solutions — we are guaranteed that the second
 clause-head will not be tried.  If it were not for the cut,
 \q{G0} would attempt to unify with the second clause-head, which will
 of course succeed, and \q{Gelse} {\em will} be tried.
@@ -1212,7 +1215,7 @@ the predicate \q{%not} is defined as follows:
     [(g) %true]))
 }
 
-\n Thus, \q{g}'s negation is deemed a failure if \q{g}
+\n Thus, \q{g}’s negation is deemed a failure if \q{g}
 succeeds, and a success if \q{g} fails.  This is of course
 confusing goal failure with falsity.  In some cases, this
 view of negation is actually helpful.
@@ -1228,7 +1231,7 @@ The goal
 
 \n unifies with \q{Bag} the list of all instantiations of
 \q{X} for which \q{G} succeeds.  Thus, the following query
-asks for all the things known --- ie, the collection of things
+asks for all the things known — ie, the collection of things
 such that someone knows them:
 
 \sverbatim{
@@ -1248,7 +1251,7 @@ such that someone knows them:
 (%more) |y #f
 }
 
-\n Note that some things --- eg, TeX --- are enumerated
+\n Note that some things — eg, TeX — are enumerated
 more than once.  This is because more than one person knows
 TeX.  To remove duplicates, use the predicate
 \q{%set-of}
@@ -1266,7 +1269,7 @@ instead of \q{%bag-of}:
 
 \n In the above, the free variable \q{someone} in the
 \q{%knows}-goal is used as if it
-were existentially quantified.  In contrast, Prolog's
+were existentially quantified.  In contrast, Prolog’s
 versions of
 \q{%bag-of} and \q{%set-of} fix it for each solution of the
 set-predicate goal.  We can do it too with some additional
@@ -1313,14 +1316,14 @@ This section lists, in ascii order, all the Schelog
 primitives, with a brief explanation for each.  Each entry is
 identified
 \texonly
- --- on the right-hand side of its entry title ---
+ — on the right-hand side of its entry title —
 \endtexonly
-as either {\em procedure}, {\em macro}, {\em predicate}, 
+as either {\em procedure}, {\em macro}, {\em predicate},
 {\em goal}, or {\em flag}.  (Note that predicates and goals are also
 procedures.  We nevertheless use the more specific names
 because of their importance to Schelog programming.)
 
-Following Prolog style, a predicate's arity is also noted in
+Following Prolog style, a predicate’s arity is also noted in
 its title.  Thus, \q{%<}\ar/2 means that \q{%<} takes two
 arguments.  Variable-arity predicates use an asterisk
 instead of a number, eg, \q{%and}\ar/*.
@@ -1527,8 +1530,8 @@ Used for failure-driven loops.
 \defflag{\q{*schelog-use-occurs-check?*}}
 
 If the global flag
-\q{*schelog-use-occurs-check?*} is false (the default), 
-Schelog's unification will not use the occurs check.
+\q{*schelog-use-occurs-check?*} is false (the default),
+Schelog’s unification will not use the occurs check.
 If it is true, the occurs check is enabled.
 
 \defpred{\q{%set-of}\ar/3}
@@ -1563,7 +1566,7 @@ instantiations, if available.
 
 A thunk that produces a new logic variable.  Can be
 used in situations where we want a logic variable but
-don't want to name it.  (\q{%let}, in contrast, introduces new
+don’t want to name it.  (\q{%let}, in contrast, introduces new
 lexical names for the logic variables it creates.)
 
 \newsection{References}

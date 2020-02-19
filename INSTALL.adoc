@@ -11,7 +11,7 @@ contains, among other subsidiary files:
 
 - the file `INSTALL.adoc`, which you are now reading.
 
-❧
+.*
 
 The file `schelog.scm` in the distribution loads in
 Racket (and some other Scheme dialects) without
@@ -44,12 +44,13 @@ try an example file, load it into your Scheme after
 ensuring that `schelog.scm` has already been loaded.
 Follow the instructions in the example file.
 
-❧
+.*
 
-The file `index.tex` contains a tutorial on Schelog.  Run it
-through (plain) TeX to obtain viewable/printable
-documentation.  (You will need to run TeX twice to resolve
-cross references.)
+The file `index.tex` contains a tutorial on Schelog. (It uses
+some macro files defined in the tex2page repo -- get them.) Run
+`index.tex` through (plain) TeX to obtain viewable/printable
+documentation.  (You will need to run TeX twice to resolve cross
+references.)
 
 You can get a browsable version of the document by
 calling
@@ -64,4 +65,4 @@ tex2page is available at
 
   github.com/ds26gte/tex2page
 
-// Last modified: 2015-11-27
+// Last modified: 2020-02-19

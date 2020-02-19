@@ -18,13 +18,13 @@ examples and comprehensive documentation.
 Schelog has been tested successfully on the following
 Scheme dialects:
 
-Bigloo, Gambit, Guile, MIT Scheme, MzScheme, Petite
+Racket, Bigloo, Gambit, Guile, MIT Scheme, MzScheme, Petite
 Chez Scheme, Pocket Scheme, SCM, and STk.
 
-❧
+.*
 
 Installation instructions are at link:INSTALL.adoc[].
 
-❧
+.*
 
 Documentation: http://ds26gte.github.io/schelog/index.html

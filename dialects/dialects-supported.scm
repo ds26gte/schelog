@@ -1,7 +1,8 @@
-;last change: 2020-02-19
+;last change: 2020-03-24
 
 bigloo
 chez
+chibi
 gambit
 gauche
 guile
